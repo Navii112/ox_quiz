@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OX 퀴즈 게임</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body text-center p-5">
+            <h1 class="fw-bold mb-5">OX 퀴즈 게임</h1>
+
+            <div th:if="${quiz == null}">
+                <h3 class="text-danger mb-4">등록된 문제가 없습니다.</h3>
+                <a th:if="${session.loginMember.role.name() == 'ADMIN'}" href="/quiz" class="btn btn-secondary">퀴즈 관리로 이동</a>
+                <a th:if="${session.loginMember.role.name() == 'USER'}" href="/member/my-page" class="btn btn-secondary">마이페이지로 이동</a>
+            </div>
+
+            <div th:if="${quiz != null}">
+                <h3 class="mb-4">퀴즈</h3>
+
+                <div class="alert alert-light border mb-5">
+                    <h4 th:text="${quiz.content}">여기에 문제가 출력됩니다.</h4>
+                </div>
+
+                <form action="/quiz/check" method="post">
+                    <input type="hidden" name="quizId" th:value="${quiz.id}">
+
+                    <button type="submit" name="answer" value="true" class="btn btn-primary btn-lg me-3">O</button>
+                    <button type="submit" name="answer" value="false" class="btn btn-danger btn-lg">X</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

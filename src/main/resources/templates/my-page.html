@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <!-- 상단 메뉴 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold mb-0">마이페이지</h1>
+        <div class="d-flex gap-2">
+            <a href="/quiz/play"
+               th:if="${member.role.name() == 'ADMIN' or member.status.name() == 'APPROVED'}"
+               class="btn btn-success">
+                퀴즈 플레이
+            </a>
+
+            <button th:if="${member.role.name() == 'USER' and member.status.name() == 'PENDING'}"
+                    class="btn btn-secondary" disabled>
+                승인 필요
+            </button>
+
+            <a href="/quiz"
+               th:if="${member.role.name() == 'ADMIN'}"
+               class="btn btn-dark">
+                퀴즈 관리
+            </a>
+
+            <a href="/member/logout" class="btn btn-outline-danger">로그아웃</a>
+        </div>
+    </div>
+
+    <div class="alert alert-success" th:if="${member.role.name() == 'ADMIN' or member.status.name() == 'APPROVED'}">
+        관리자 승인이 완료되었습니다. 퀴즈 플레이가 가능합니다.
+    </div>
+
+    <div class="alert alert-warning" th:if="${member.role.name() == 'USER' and member.status.name() == 'PENDING'}">
+        관리자 승인 후 퀴즈 플레이가 가능합니다.
+    </div>
+
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-bold">내 정보</div>
+        <div class="card-body">
+            <table class="table align-middle mb-0">
+                <tbody>
+                <tr>
+                    <th style="width: 200px;">아이디</th>
+                    <td th:text="${member.id}">user01</td>
+                </tr>
+                <tr>
+                    <th>권한</th>
+                    <td>
+                        <span class="badge bg-danger" th:if="${member.role.name() == 'ADMIN'}">ADMIN</span>
+                        <span class="badge bg-primary" th:if="${member.role.name() == 'USER'}">USER</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>승인 상태</th>
+                    <td>
+                        <span class="badge bg-success" th:if="${member.role.name() == 'ADMIN' or member.status.name() == 'APPROVED'}">
+                            승인 완료
+                        </span>
+                        <span class="badge bg-secondary" th:if="${member.role.name() == 'USER' and member.status.name() == 'PENDING'}">
+                            승인 대기
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>맞은 문제 수</th>
+                    <td><span class="badge bg-primary" th:text="${member.answerTrue}">0</span></td>
+                </tr>
+                <tr>
+                    <th>틀린 문제 수</th>
+                    <td><span class="badge bg-danger" th:text="${member.answerFalse}">0</span></td>
+                </tr>
+                <tr>
+                    <th>가입일</th>
+                    <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-16 10:00</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 비밀번호 수정 -->
+    <div class="card shadow-sm">
+
+        <div class="card-header fw-bold">
+            비밀번호 수정
+        </div>
+
+        <div class="card-body">
+
+            <form
+                    action="/member/password"
+                    method="post"
+                    onsubmit="return checkPassword();">
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        새 비밀번호
+                    </label>
+
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        새 비밀번호 확인
+                    </label>
+
+                    <input
+                            type="password"
+                            id="passwordCheck"
+                            class="form-control"
+                            required>
+                </div>
+
+                <div
+                        id="passwordMessage"
+                        class="text-danger fw-bold mb-3">
+                </div>
+
+                <button
+                        type="submit"
+                        class="btn btn-warning">
+                    비밀번호 수정
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function checkPassword() {
+
+        const password =
+            document.getElementById("password").value;
+
+        const passwordCheck =
+            document.getElementById("passwordCheck").value;
+
+        const message =
+            document.getElementById("passwordMessage");
+
+        if (password !== passwordCheck) {
+
+            message.textContent =
+                "비밀번호가 일치하지 않습니다.";
+
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+</body>
+</html>
